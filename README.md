@@ -10,7 +10,6 @@ DELETE /v1/players/{id}
 ```
 
 ## DB Structure
-![alt text](db.png)
 ```
 Table players {
   id bigserial [primary key]
