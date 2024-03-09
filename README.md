@@ -2,14 +2,13 @@
 A quiz game for many players, on diferent topics, and difficulties
 
 ## Endpoints
-```
-POST /v1/players
-GET /v1/players/{id}
-PUT /v1 players/{id}
-DELETE /v1/players/{id}
-```
+```POST /v1/players``` - Create new user. Requires only `name`
+```GET /v1/players/{id}``` - Get player by `{id}`
+```PUT /v1 players/{id}``` - Update player name and score
+```DELETE /v1/players/{id}``` - Delete player by id
 
 ## DB Structure
+![alt text](https://github.com/margulan-kalykul/JustQuiz/blob/main/db.jpg?raw=true)
 ```
 Table players {
   id bigserial [primary key]
