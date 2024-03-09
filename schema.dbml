@@ -1,17 +1,6 @@
-# JustQuiz
-A quiz game for many players, on diferent topics, and difficulties
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
 
-## Endpoints
-```
-POST /v1/players
-GET /v1/players/{id}
-PUT /v1 players/{id}
-DELETE /v1/players/{id}
-```
-
-## DB Structure
-(db.png)
-```
 Table players {
   id bigserial [primary key]
   name text
@@ -43,4 +32,3 @@ Table games {
 Ref: games.quiz < quizes.id
 
 Ref: games.player < players.id
-```
