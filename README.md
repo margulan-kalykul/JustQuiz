@@ -1,4 +1,5 @@
 # JustQuiz
+### By Kalykul Margulan
 A quiz game for many players, on diferent topics, and difficulties
 
 ## Endpoints
