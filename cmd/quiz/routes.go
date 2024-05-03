@@ -28,11 +28,11 @@ func (app *application) routes() http.Handler {
 	// Create a new player
 	players.HandleFunc("/players", app.createPlayerHandler).Methods("POST")
 	// Get a player by id
-	players.HandleFunc("/players/{playerId:[0-9]+}", app.getPlayerHandler).Methods("GET")
+	players.HandleFunc("/players/{id:[0-9]+}", app.getPlayerHandler).Methods("GET")
 	// Update player data with id
-	players.HandleFunc("/players/{playerId:[0-9]+}", app.updatePlayerHandler).Methods("PUT")
+	players.HandleFunc("/players/{id:[0-9]+}", app.updatePlayerHandler).Methods("PUT")
 	// Delete player by id
-	players.HandleFunc("/players/{playerId:[0-9]+}", app.requirePermissions("players:write", app.deletePlayerHandler)).Methods("DELETE")
+	players.HandleFunc("/players/{id:[0-9]+}", app.requirePermissions("players:write", app.deletePlayerHandler)).Methods("DELETE")
 
 	users := r.PathPrefix("/v1").Subrouter()
 	// User handlers with Authentication
