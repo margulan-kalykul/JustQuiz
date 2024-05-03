@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 )
 
@@ -21,6 +22,31 @@ type QuizModel struct {
 	DB       *sql.DB
 	InfoLog  *log.Logger
 	ErrorLog *log.Logger
+}
+
+func (m QuizModel) GetAll() ([]*Quiz, error) {
+	// TODO: implement this method
+	return nil, errors.New("not implemented")
+}
+
+func (m QuizModel) Insert(menu *Quiz) error {
+	// TODO: implement this method
+	return errors.New("not implemented")
+}
+
+func (m QuizModel) Get(id int) (*Quiz, error) {
+	// TODO: implement this method
+	return nil, errors.New("not implemented")
+}
+
+func (m QuizModel) Update(menu *Quiz) error {
+	// TODO: implement this method
+	return errors.New("not implemented")
+}
+
+func (m QuizModel) Delete(id int) error {
+	// TODO: implement this method
+	return errors.New("not implemented")
 }
 
 // func (q QuizModel) GetQuizes() ([]Quiz, error) {

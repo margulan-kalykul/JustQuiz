@@ -3,7 +3,6 @@ package model
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -22,6 +21,36 @@ type PlayerModel struct {
 	ErrorLog *log.Logger
 }
 
+func (m PlayerModel) GetAll() ([]*Player, error) {
+	// Retrieve all players from the database
+	query := `
+		SELECT id, name, joined, last_update, score
+		FROM players
+		`
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	rows, err := m.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var players []*Player
+	for rows.Next() {
+		var player Player
+		err := rows.Scan(&player.Id, &player.Name, &player.Joined, &player.LastUpdate, &player.Score)
+		if err != nil {
+			return nil, err
+		}
+		players = append(players, &player)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return players, nil
+}
+
 func (p PlayerModel) Insert(player *Player) error {
 	// Create a new player in the database
 	query := `
@@ -37,9 +66,9 @@ func (p PlayerModel) Insert(player *Player) error {
 }
 
 func (p PlayerModel) Get(id int) (*Player, error) {
-	// Invalid id
+	// Invalid id. Return an error if the ID is less than 1.
 	if id < 1 {
-		return nil, errors.New("Invalid player id")
+		return nil, ErrRecordNotFound
 	}
 
 	// Retrieve a player with its ID
@@ -55,7 +84,7 @@ func (p PlayerModel) Get(id int) (*Player, error) {
 	row := p.DB.QueryRowContext(ctx, query, id)
 	err := row.Scan(&player.Id, &player.Name, &player.Joined, &player.LastUpdate, &player.Score)
 	if err != nil {
-		return nil, fmt.Errorf("cannot retrive menu with id: %v, %w", id, err)
+		return nil, fmt.Errorf("cannot retrive player with id: %v, %w", id, err)
 	}
 	return &player, nil
 }
@@ -76,9 +105,9 @@ func (p PlayerModel) Update(player *Player) error {
 }
 
 func (p PlayerModel) Delete(id int) error {
-	// Invalid id
+	// Invalid id. Return an error if the ID is less than 1.
 	if id < 1 {
-		return errors.New("Not Found")
+		return ErrRecordNotFound
 	}
 
 	// Delete player by id

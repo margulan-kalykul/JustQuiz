@@ -2,13 +2,25 @@ package model
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"os"
 )
 
+var (
+	// ErrRecordNotFound is returned when a movie record doesn't exist in database.
+	ErrRecordNotFound = errors.New("record not found")
+
+	// ErrEditConflict is returned when a there is a data race, and we have an edit conflict.
+	ErrEditConflict = errors.New("edit conflict")
+)
+
 type Models struct {
-	Players	PlayerModel
-	Quizes	QuizModel
+	Players		PlayerModel
+	Quizes		QuizModel
+	Users       UserModel
+	Tokens      TokenModel
+	Permissions PermissionModel
 }
 
 func AllModels(db *sql.DB) Models {
@@ -21,6 +33,21 @@ func AllModels(db *sql.DB) Models {
 			ErrorLog: errorLog,
 		},
 		Quizes: QuizModel{
+			DB:       db,
+			InfoLog:  infoLog,
+			ErrorLog: errorLog,
+		},
+		Users: UserModel{
+			DB:       db,
+			InfoLog:  infoLog,
+			ErrorLog: errorLog,
+		},
+		Tokens: TokenModel{
+			DB:       db,
+			InfoLog:  infoLog,
+			ErrorLog: errorLog,
+		},
+		Permissions: PermissionModel{
 			DB:       db,
 			InfoLog:  infoLog,
 			ErrorLog: errorLog,
