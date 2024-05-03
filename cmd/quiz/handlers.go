@@ -1,7 +1,10 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
+	"errors"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -53,6 +56,7 @@ func (app *application) createPlayerHandler(w http.ResponseWriter, r *http.Reque
 
 	err := app.readJSON(w, r, &input)
 	if err != nil {
+		log.Println(err)
 		app.respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
@@ -82,6 +86,9 @@ func (app *application) getPlayerHandler(w http.ResponseWriter, r *http.Request)
 
 	player, err := app.models.Players.Get(id)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			log.Printf("Menu with ID %d not found\n", id)
+		}
 		app.respondWithError(w, http.StatusNotFound, "404 Not Found")
 		return
 	}

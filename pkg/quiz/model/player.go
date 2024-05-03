@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 )
@@ -54,7 +55,7 @@ func (p PlayerModel) Get(id int) (*Player, error) {
 	row := p.DB.QueryRowContext(ctx, query, id)
 	err := row.Scan(&player.Id, &player.Name, &player.Joined, &player.LastUpdate, &player.Score)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cannot retrive menu with id: %v, %w", id, err)
 	}
 	return &player, nil
 }

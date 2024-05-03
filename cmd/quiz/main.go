@@ -2,10 +2,14 @@ package main
 
 import (
 	"database/sql"
+	"errors"
+	"os"
+
 	// "encoding/json"
 	"flag"
 	"log"
 	"net/http"
+
 	// "strconv"
 
 	"github.com/gorilla/mux"
@@ -35,6 +39,11 @@ func main() {
 
 	db, err := openDB(cfg)
 	if err != nil {
+		var pgErr *os.SyscallError
+		if errors.As(err, &pgErr) {
+			log.Fatalf("Error opening database: %s\n", pgErr.Error())
+			return
+		}
 		log.Fatal(err)
 		return
 	}
@@ -70,6 +79,11 @@ func (app *application) run() {
 func openDB(cfg config) (*sql.DB, error) {
 	db, err := sql.Open("postgres", cfg.db.dsn)
 
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.Ping()
 	if err != nil {
 		return nil, err
 	}
