@@ -8,8 +8,14 @@ import (
 
 	"github.com/margulan-kalykul/JustQuiz/pkg/quiz/jsonlog"
 	"github.com/margulan-kalykul/JustQuiz/pkg/quiz/model"
+	"github.com/margulan-kalykul/JustQuiz/pkg/vcs"
 
 	_ "github.com/lib/pq"
+)
+
+// Set version of application corresponding to value of vcs.Version.
+var (
+	version = vcs.Version()
 )
 
 type config struct {
