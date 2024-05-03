@@ -23,34 +23,75 @@ type PlayerModel struct {
 	ErrorLog *log.Logger
 }
 
-func (m PlayerModel) GetAll() ([]*Player, error) {
+func (m PlayerModel) GetAll(name string, from, to int, filters Filters) ([]*Player, Metadata, error) {
 	// Retrieve all players from the database
-	query := `
-		SELECT id, name, joined, last_update, score
-		FROM players
+	query := fmt.Sprintf(
 		`
+		SELECT count(*) OVER(), id, name, joined, last_update, score
+		FROM players
+		WHERE (LOWER(name) = LOWER($1) OR $1 = '')
+		AND (score >= $2 OR $2 = 0)
+		AND (score <= $3 OR $3 = 0)
+		ORDER BY %s %s, id ASC
+		LIMIT $4 OFFSET $5
+		`,
+		filters.sortColumn(), filters.sortDirection())
+
+	// query := `
+	// 	SELECT id, name, joined, last_update, score
+	// 	FROM players
+	// 	`
+
+	// Create a context with a 3-second timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	rows, err := m.DB.QueryContext(ctx, query)
+	// Organize our four placeholder parameter values in a slice.
+	args := []interface{}{name, from, to, filters.limit(), filters.offset()}
+
+	// log.Println(query, title, from, to, filters.limit(), filters.offset())
+	// Use QueryContext to execute the query. This returns a sql.Rows result set containing
+	// the result.
+	rows, err := m.DB.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+		return nil, Metadata{}, err
+	}	
+
+	// Importantly, defer a call to rows.Close() to ensure that the result set is closed
+	// before GetAll returns.
+	defer func() {
+		if err := rows.Close(); err != nil {
+			m.ErrorLog.Println(err)
+		}
+	}()
+
+	// Declare a totalRecords variable
+	totalRecords := 0
 
 	var players []*Player
 	for rows.Next() {
 		var player Player
-		err := rows.Scan(&player.Id, &player.Name, &player.Joined, &player.LastUpdate, &player.Score)
+		err := rows.Scan(&totalRecords, &player.Id, &player.Name, &player.Joined, &player.LastUpdate, &player.Score)
 		if err != nil {
-			return nil, err
+			return nil, Metadata{}, err
 		}
+
+		// Add the player struct to the slice
 		players = append(players, &player)
 	}
+
+	// When the rows.Next() loop has finished, call rows.Err() to retrieve any error
+	// that was encountered during the iteration.
 	if err = rows.Err(); err != nil {
-		return nil, err
+		return nil, Metadata{}, err
 	}
-	return players, nil
+	
+	// Generate a Metadata struct, passing in the total record count and pagination parameters
+	// from the client.
+	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
+
+	// If everything went OK, then return the slice of the movies and metadata.
+	return players, metadata, nil
 }
 
 func (p PlayerModel) Insert(player *Player) error {
