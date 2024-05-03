@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/margulan-kalykul/JustQuiz/pkg/quiz/validator"
 )
 
 type Player struct {
@@ -120,4 +122,13 @@ func (p PlayerModel) Delete(id int) error {
 
 	_, err := p.DB.ExecContext(ctx, query, id)
 	return err
+}
+
+func ValidatePlayer(v *validator.Validator, player *Player) {
+	// Check if the name field is empty.
+	v.Check(player.Name != "", "name", "must be provided")
+	// Check if the title name is no more than 100 characters.
+	v.Check(len(player.Name) <= 100, "name", "must not be more than 100 bytes long")
+	// Check if the score value is not negative.
+	v.Check(player.Score >= 0, "score", "must not be negative")
 }

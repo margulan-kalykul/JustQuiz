@@ -4,7 +4,9 @@ import (
 	"errors"
 	"log"
 	"net/http"
+
 	"github.com/margulan-kalykul/JustQuiz/pkg/quiz/model"
+	"github.com/margulan-kalykul/JustQuiz/pkg/quiz/validator"
 )
 
 // func (app *application) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
@@ -108,6 +110,13 @@ func (app *application) updatePlayerHandler(w http.ResponseWriter, r *http.Reque
 	}
 	if input.Score != nil {
 		player.Score = *input.Score
+	}
+
+	v := validator.New()
+
+	if model.ValidatePlayer(v, player); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
 	}
 
 	err = app.models.Players.Update(player)
