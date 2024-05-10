@@ -2,14 +2,29 @@
 ### By Kalykul Margulan
 A quiz game for many players, on diferent topics, and difficulties
 
+## Running the app
+Run this command to run the app
+```
+$ env POSTGRES_PASSWORD="postgres" APP_DSN="postgres://postgres:postgres@db:5432/postgres?sslmode=disable" docker-compose --env-file .env.example up --build
+```
+
 ## Endpoints
-```POST /v1/players``` - Create new user. Requires only `name`
+* For players
+```POST /v1/players``` - Create new player. Requires only `name`
 
 ```GET /v1/players/{id}``` - Get player by `{id}`
 
-```PUT /v1 players/{id}``` - Update player name and score
+```PUT /v1/players/{id}``` - Update player name and score
 
-```DELETE /v1/players/{id}``` - Delete player by `{id}`
+```DELETE /v1/players/{id}``` - Delete player by `{id}`. Requires `menus:write` permission.
+
+```/v1/healthcheck``` - For healthcheck
+
+```/v1/players``` - Get a list of all players
+* For users
+	```/v1/users``` - Register new user
+	```/v1/users/activated``` - Activate user
+	```/v1/users/login``` - Login user
 
 ## DB Structure
 ```
