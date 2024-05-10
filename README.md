@@ -18,13 +18,18 @@ $ env POSTGRES_PASSWORD="postgres" APP_DSN="postgres://postgres:postgres@db:5432
 
 ```DELETE /v1/players/{id}``` - Delete player by `{id}`. Requires `menus:write` permission.
 
-```/v1/healthcheck``` - For healthcheck
+```GET /v1/healthcheck``` - For healthcheck
 
-```/v1/players``` - Get a list of all players
+```GET /v1/players``` - Get a list of all players
+
 * For users
-	```/v1/users``` - Register new user
-	```/v1/users/activated``` - Activate user
-	```/v1/users/login``` - Login user
+
+	```POST /v1/users``` - Register new user
+
+	```PUT /v1/users/activated``` - Activate user
+
+	```POST /v1/users/login``` - Login user
+
 
 ## DB Structure
 ```
