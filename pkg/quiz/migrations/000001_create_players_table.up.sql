@@ -1,5 +1,3 @@
-DROP TABLE IF EXISTS schema_migrations;
-
 CREATE TABLE IF NOT EXISTS players (
     id bigserial PRIMARY KEY,
     name text NOT NULL,
