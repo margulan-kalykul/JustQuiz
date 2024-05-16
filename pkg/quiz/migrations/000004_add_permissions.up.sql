@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS users_permissions
 );
 
 INSERT INTO permissions (code)
-VALUES ('menus:read'), ('menus:write');
+VALUES ('player:read'), ('player:write');
