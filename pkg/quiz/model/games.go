@@ -23,16 +23,16 @@ type GameModel struct {
 	ErrorLog *log.Logger
 }
 
-func (g GameModel) GetAll(player, quiz string, from, to string, filters Filters) ([]*Game, Metadata, error) {
+func (g GameModel) GetAll(player, quiz int, from, to string, filters Filters) ([]*Game, Metadata, error) {
 	// Retrieve all gamees from the database
 	query := fmt.Sprintf(
 		`
 		SELECT count(*) OVER(), id, finished, player, quiz
 		FROM games
-		WHERE (player = $1 OR $1 = '')
-		AND (quiz = $2 OR $2 = '')
-		AND (finished >= $2 OR $2 = 0)
-		AND (finished <= $3 OR $3 = 0)
+		WHERE (player = $1 OR $1 = 0)
+		AND (quiz = $2 OR $2 = 0)
+		AND (finished > $2 OR $2 = '')
+		AND (finished < $3 OR $3 = '')
 		ORDER BY %s %s, id ASC
 		LIMIT $4 OFFSET $5;
 		`,

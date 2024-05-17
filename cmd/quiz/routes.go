@@ -24,11 +24,11 @@ func (app *application) routes() http.Handler {
 	// Players list
 	players.HandleFunc("/players", app.getPlayersList).Methods("GET")
 	// Create a new player
-	players.HandleFunc("/players", app.createPlayerHandler).Methods("POST")
+	players.HandleFunc("/players", app.requireAuthenticatedUser(app.createPlayerHandler)).Methods("POST")
 	// Get a player by id
 	players.HandleFunc("/players/{id:[0-9]+}", app.getPlayerHandler).Methods("GET")
 	// Update player data with id
-	players.HandleFunc("/players/{id:[0-9]+}", app.updatePlayerHandler).Methods("PUT")
+	players.HandleFunc("/players/{id:[0-9]+}", app.requireAuthenticatedUser(app.updatePlayerHandler)).Methods("PUT")
 	// Delete player by id
 	players.HandleFunc("/players/{id:[0-9]+}", app.requirePermissions("player:write", app.deletePlayerHandler)).Methods("DELETE")
 
@@ -36,11 +36,11 @@ func (app *application) routes() http.Handler {
 	// Quizes list
 	quizes.HandleFunc("/quizes", app.getQuizesList).Methods("GET")
 	// Create a new player
-	quizes.HandleFunc("/quizes", app.createQuizHandler).Methods("POST")
+	quizes.HandleFunc("/quizes", app.requireAuthenticatedUser(app.createQuizHandler)).Methods("POST")
 	// Get a player by id
 	quizes.HandleFunc("/quizes/{id:[0-9]+}", app.getQuizHandler).Methods("GET")
 	// Update player data with id
-	quizes.HandleFunc("/quizes/{id:[0-9]+}", app.updateQuizHandler).Methods("PUT")
+	quizes.HandleFunc("/quizes/{id:[0-9]+}", app.requireAuthenticatedUser(app.updateQuizHandler)).Methods("PUT")
 	// Delete player by id
 	quizes.HandleFunc("/quizes/{id:[0-9]+}", app.requirePermissions("player:write", app.deleteQuizHandler)).Methods("DELETE")
 
@@ -48,11 +48,11 @@ func (app *application) routes() http.Handler {
 	// Games list
 	games.HandleFunc("/games", app.getGamesList).Methods("GET")
 	// Create a new player
-	games.HandleFunc("/games", app.createGameHandler).Methods("POST")
+	games.HandleFunc("/games", app.requireAuthenticatedUser(app.createGameHandler)).Methods("POST")
 	// Get a player by id
 	games.HandleFunc("/games/{id:[0-9]+}", app.getGameHandler).Methods("GET")
 	// Answer question
-	games.HandleFunc("/games/{id:[0-9]+}", app.answerGameHandler).Methods("POST")
+	games.HandleFunc("/games/{id:[0-9]+}", app.requireAuthenticatedUser(app.answerGameHandler)).Methods("POST")
 	// Delete player by id
 	games.HandleFunc("/games/{id:[0-9]+}", app.requirePermissions("player:write", app.deleteGameHandler)).Methods("DELETE")
 

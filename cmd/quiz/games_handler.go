@@ -40,8 +40,8 @@ func (app *application) createGameHandler(w http.ResponseWriter, r *http.Request
 
 func (app *application) getGamesList(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		Player       string
-		Quiz         string
+		Player       int
+		Quiz         int
 		FinishedFrom string
 		FinishedTo   string
 		model.Filters
@@ -52,8 +52,8 @@ func (app *application) getGamesList(w http.ResponseWriter, r *http.Request) {
 	// Use our helpers to extract the name and score value range query string values, falling back to the
 	// defaults of an empty string and an empty slice, respectively, if they are not provided
 	// by the client.
-	input.Player = app.readStrings(qs, "player", "")
-	input.Quiz = app.readStrings(qs, "quiz", "")
+	input.Player = app.readInt(qs, "player", 0, v)
+	input.Quiz = app.readInt(qs, "quiz", 0, v)
 	input.FinishedFrom = app.readStrings(qs, "finisedFrom", "")
 	input.FinishedTo = app.readStrings(qs, "finishedTo", "")
 
