@@ -33,7 +33,7 @@ func (app *application) routes() http.Handler {
 	players.HandleFunc("/players/{id:[0-9]+}", app.requirePermissions("player:write", app.deletePlayerHandler)).Methods("DELETE")
 	// Quizes that a player finished
 	// Relation
-	// players.HandleFunc("/players/{id:[0-9]+}/quizes", app.getPlayerQuizes).Methods("GET")
+	players.HandleFunc("/players/{id:[0-9]+}/quizes", app.getPlayerQuizes).Methods("GET")	
 
 	quizes := r.PathPrefix("/v1").Subrouter()
 	// Quizes list
@@ -46,6 +46,9 @@ func (app *application) routes() http.Handler {
 	quizes.HandleFunc("/quizes/{id:[0-9]+}", app.requireAuthenticatedUser(app.updateQuizHandler)).Methods("PUT")
 	// Delete player by id
 	quizes.HandleFunc("/quizes/{id:[0-9]+}", app.requirePermissions("player:write", app.deleteQuizHandler)).Methods("DELETE")
+	// Players that finished the quiz
+	// Relation
+	quizes.HandleFunc("/quizes/{id:[0-9]+}/players", app.getQuizePlayers).Methods("GET")
 
 	games := r.PathPrefix("/v1").Subrouter()
 	// Games list

@@ -111,6 +111,69 @@ func (app *application) getQuizHandler(w http.ResponseWriter, r *http.Request) {
 	app.writeJSON(w, http.StatusOK, envelope{"quiz": quiz}, nil)
 }
 
+func (app *application) getQuizePlayers(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
+
+	var input struct {
+		Player       int
+		Quiz         int
+		FinishedFrom string
+		FinishedTo   string
+		model.Filters
+	}
+	v := validator.New()
+	qs := r.URL.Query()
+
+	input.Player = app.readInt(qs, "player", 0, v)
+	input.Quiz = id
+	input.FinishedFrom = app.readStrings(qs, "finisedFrom", "1980-01-01 00:00:00+06")
+	input.FinishedTo = app.readStrings(qs, "finishedTo", "1980-01-01 00:00:00+06")
+
+	input.Filters.Page = app.readInt(qs, "page", 1, v)
+	input.Filters.PageSize = app.readInt(qs, "page_size", 20, v)
+
+	input.Filters.Sort = app.readStrings(qs, "sort", "id")
+
+	input.Filters.SortSafeList = []string{
+		"id", "finished", "player", "quiz",
+		"-id", "-finished", "-player", "-quiz",
+	}
+
+	if model.ValidateFilters(v, input.Filters); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+	games, metadata, err := app.models.Games.GetAll(input.Player, input.Quiz, input.FinishedFrom, input.FinishedTo, input.Filters)
+
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	// Get all relevant quizes
+	var players []*model.Player
+	for _, game := range games {
+		playerId := game.Player
+		player, err := app.models.Players.Get(playerId)
+		if err != nil {
+			switch {
+			case errors.Is(err, model.ErrRecordNotFound):
+				app.notFoundResponse(w, r)
+			default:
+				app.serverErrorResponse(w, r, err)
+			}
+			return
+		}
+		players = append(players, player)
+	}
+
+	app.writeJSON(w, http.StatusOK, envelope{"players": players, "metadata": metadata}, nil)
+}
+
 func (app *application) updateQuizHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {

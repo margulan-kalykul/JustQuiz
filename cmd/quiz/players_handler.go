@@ -115,26 +115,68 @@ func (app *application) getPlayerHandler(w http.ResponseWriter, r *http.Request)
 	app.writeJSON(w, http.StatusOK, envelope{"player": player}, nil)
 }
 
-// func (app *application) getPlayerQuizes(w http.ResponseWriter, r *http.Request) {
-// 	id, err := app.readIDParam(r)
-// 	if err != nil {
-// 		app.notFoundResponse(w, r)
-// 		return
-// 	}
+func (app *application) getPlayerQuizes(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.notFoundResponse(w, r)
+		return
+	}
 
-// 	player, err := app.models.Players.Get(id)
-// 	if err != nil {
-// 		switch {
-// 		case errors.Is(err, model.ErrRecordNotFound):
-// 			app.notFoundResponse(w, r)
-// 		default:
-// 			app.serverErrorResponse(w, r, err)
-// 		}
-// 		return
-// 	}
+	var input struct {
+		Player       int
+		Quiz         int
+		FinishedFrom string
+		FinishedTo   string
+		model.Filters
+	}
+	v := validator.New()
+	qs := r.URL.Query()
 
-// 	app.writeJSON(w, http.StatusOK, envelope{"player": player}, nil)
-// }
+	input.Player = id
+	input.Quiz = app.readInt(qs, "quiz", 0, v)
+	input.FinishedFrom = app.readStrings(qs, "finisedFrom", "1980-01-01 00:00:00+06")
+	input.FinishedTo = app.readStrings(qs, "finishedTo", "1980-01-01 00:00:00+06")
+
+	input.Filters.Page = app.readInt(qs, "page", 1, v)
+	input.Filters.PageSize = app.readInt(qs, "page_size", 20, v)
+
+	input.Filters.Sort = app.readStrings(qs, "sort", "id")
+
+	input.Filters.SortSafeList = []string{
+		"id", "finished", "player", "quiz",
+		"-id", "-finished", "-player", "-quiz",
+	}
+
+	if model.ValidateFilters(v, input.Filters); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+	games, metadata, err := app.models.Games.GetAll(input.Player, input.Quiz, input.FinishedFrom, input.FinishedTo, input.Filters)
+
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	// Get all relevant quizes
+	var quizes []*model.Quiz
+	for _, game := range games {
+		quizId := game.Quiz
+		quiz, err := app.models.Quizes.Get(quizId)
+		if err != nil {
+			switch {
+			case errors.Is(err, model.ErrRecordNotFound):
+				app.notFoundResponse(w, r)
+			default:
+				app.serverErrorResponse(w, r, err)
+			}
+			return
+		}
+		quizes = append(quizes, quiz)
+	}
+
+	app.writeJSON(w, http.StatusOK, envelope{"quizes": quizes, "metadata": metadata}, nil)
+}
 
 func (app *application) updatePlayerHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
