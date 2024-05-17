@@ -31,10 +31,10 @@ func (g GameModel) GetAll(player, quiz int, from, to string, filters Filters) ([
 		FROM games
 		WHERE (player = $1 OR $1 = 0)
 		AND (quiz = $2 OR $2 = 0)
-		AND (finished > $2 OR $2 = '')
-		AND (finished < $3 OR $3 = '')
+		AND (finished > $3 OR $3 = '1980-01-01 00:00:00+06')
+		AND (finished < $4 OR $4 = '1980-01-01 00:00:00+06')
 		ORDER BY %s %s, id ASC
-		LIMIT $4 OFFSET $5;
+		LIMIT $5 OFFSET $6;
 		`,
 		filters.sortColumn(), filters.sortDirection())
 
@@ -111,7 +111,7 @@ func (g GameModel) Get(id int) (*Game, error) {
 
 	// Retrieve a game with its ID
 	query := `
-		SELECT id, player, quiz
+		SELECT id, finished, player, quiz
 		FROM games
 		WHERE id = $1;
 		`
@@ -120,7 +120,7 @@ func (g GameModel) Get(id int) (*Game, error) {
 	defer cancel()
 
 	row := g.DB.QueryRowContext(ctx, query, id)
-	err := row.Scan(&game.Id, &game.Player, &game.Quiz)
+	err := row.Scan(&game.Id, &game.Finished, &game.Player, &game.Quiz)
 	if err != nil {
 		return nil, fmt.Errorf("cannot retrive game with id: %v, %w", id, err)
 	}

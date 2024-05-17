@@ -115,6 +115,27 @@ func (app *application) getPlayerHandler(w http.ResponseWriter, r *http.Request)
 	app.writeJSON(w, http.StatusOK, envelope{"player": player}, nil)
 }
 
+// func (app *application) getPlayerQuizes(w http.ResponseWriter, r *http.Request) {
+// 	id, err := app.readIDParam(r)
+// 	if err != nil {
+// 		app.notFoundResponse(w, r)
+// 		return
+// 	}
+
+// 	player, err := app.models.Players.Get(id)
+// 	if err != nil {
+// 		switch {
+// 		case errors.Is(err, model.ErrRecordNotFound):
+// 			app.notFoundResponse(w, r)
+// 		default:
+// 			app.serverErrorResponse(w, r, err)
+// 		}
+// 		return
+// 	}
+
+// 	app.writeJSON(w, http.StatusOK, envelope{"player": player}, nil)
+// }
+
 func (app *application) updatePlayerHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := app.readIDParam(r)
 	if err != nil {

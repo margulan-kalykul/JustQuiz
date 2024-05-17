@@ -54,8 +54,8 @@ func (app *application) getGamesList(w http.ResponseWriter, r *http.Request) {
 	// by the client.
 	input.Player = app.readInt(qs, "player", 0, v)
 	input.Quiz = app.readInt(qs, "quiz", 0, v)
-	input.FinishedFrom = app.readStrings(qs, "finisedFrom", "")
-	input.FinishedTo = app.readStrings(qs, "finishedTo", "")
+	input.FinishedFrom = app.readStrings(qs, "finisedFrom", "1980-01-01 00:00:00+06")
+	input.FinishedTo = app.readStrings(qs, "finishedTo", "1980-01-01 00:00:00+06")
 
 	// Ge the page and page_size query string value as integers. Notice that we set the default
 	// page value to 1 and default page_size to 20, and that we pass the validator instance
