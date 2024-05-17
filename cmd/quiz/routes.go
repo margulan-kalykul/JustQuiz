@@ -21,7 +21,6 @@ func (app *application) routes() http.Handler {
 	r.HandleFunc("/v1/healthcheck", app.healthcheckHandler).Methods("GET")
 
 	players := r.PathPrefix("/v1").Subrouter()
-
 	// Players list
 	players.HandleFunc("/players", app.getPlayersList).Methods("GET")
 	// Create a new player
@@ -32,6 +31,18 @@ func (app *application) routes() http.Handler {
 	players.HandleFunc("/players/{id:[0-9]+}", app.updatePlayerHandler).Methods("PUT")
 	// Delete player by id
 	players.HandleFunc("/players/{id:[0-9]+}", app.requirePermissions("player:write", app.deletePlayerHandler)).Methods("DELETE")
+
+	quizes := r.PathPrefix("/v1").Subrouter()
+	// Quizes list
+	quizes.HandleFunc("/quizes", app.getQuizesList).Methods("GET")
+	// Create a new player
+	quizes.HandleFunc("/quizes", app.createQuizHandler).Methods("POST")
+	// Get a player by id
+	quizes.HandleFunc("/quizes/{id:[0-9]+}", app.getQuizHandler).Methods("GET")
+	// Update player data with id
+	quizes.HandleFunc("/quizes/{id:[0-9]+}", app.updateQuizHandler).Methods("PUT")
+	// Delete player by id
+	quizes.HandleFunc("/quizes/{id:[0-9]+}", app.requirePermissions("player:write", app.deleteQuizHandler)).Methods("DELETE")
 
 	users := r.PathPrefix("/v1").Subrouter()
 	// User handlers with Authentication

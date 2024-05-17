@@ -8,6 +8,17 @@ Run this command to run the app
 $ env POSTGRES_PASSWORD="postgres" APP_DSN="postgres://postgres:postgres@db:5432/postgres?sslmode=disable" docker-compose --env-file .env.example up --build
 ```
 
+## Digital Ocean Database
+```
+postgresql://doadmin:AVNS_0qYCfJU4eaOmSndXEyT@justquiz-do-user-16680509-0.c.db.ondigitalocean.com:25060/defaultdb?sslmode=require
+```
+migrate existing database
+```
+PGPASSWORD=AVNS_0qYCfJU4eaOmSndXEyT pg_restore -U doadmin -h justquiz-do-user-16680509-0.c.db.ondigitalocean.com -p 25060 -d defaultdb 
+```
+password
+'1Password'
+
 ## Endpoints
 * For players
 ```POST /v1/players``` - Create new player. Requires only `name`

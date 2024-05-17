@@ -32,7 +32,9 @@ COPY --from=builder /app/pkg/quiz/migrations ./migrations
 
 # For migrations (doesn't work)
 # RUN migrate -path=./pkg/quiz/migrations -database=postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable up
-# CMD ["./migrations"]
+# COPY /app/entrypoint.sh entrypoint.sh 
+# entrypoint ["app/entrypoint.sh"]
+# CMD ["./migrations/migrations"]
 
 # Command to run the executable
 CMD ["./justquiz"]

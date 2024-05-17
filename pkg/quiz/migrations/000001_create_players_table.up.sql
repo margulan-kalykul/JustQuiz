@@ -1,3 +1,5 @@
+-- DROP TABLE IF EXISTS schema_migrations;
+
 CREATE TABLE IF NOT EXISTS players (
     id bigserial PRIMARY KEY,
     name text NOT NULL,
@@ -6,22 +8,20 @@ CREATE TABLE IF NOT EXISTS players (
     score integer NOT NULL DEFAULT 0
 );
 
--- CREATE TABLE IF NOT EXISTS quizes (
---     id bigserial PRIMARY KEY,
--- 	created_at timestamp(0) with time zone NOT NULL DEFAULT NOW(),
--- 	updated_at timestamp(0) with time zone NOT NULL DEFAULT NOW(),
--- 	category  text,
--- 	dificulty integer DEFAULT 0,
--- 	q1 text NOT NULL,
--- 	a1 text NOT NULL,
--- 	q2 text NOT NULL,
--- 	a2 text NOT NULL
--- );
 
--- CREATE TABLE IF NOT EXISTS games (
---     id bigserial PRIMARY KEY,
---     time timestamp(0) with time zone NOT NULL DEFAULT NOW(),
---     place text,
---     FOREIGN KEY (quiz) REFERENCES quizes(id),
---     FOREIGN KEY (player) REFERENCES players(id)
--- );
+CREATE TABLE IF NOT EXISTS quizes (
+    id bigserial PRIMARY KEY,
+	category text DEFAULT 'general',
+	reward integer DEFAULT 0,
+	questions text[] DEFAULT '{}',
+    answers text[] DEFAULT '{}'
+);
+
+CREATE TABLE IF NOT EXISTS games (
+    id bigserial PRIMARY KEY,
+    finished timestamp(0) with time zone NOT NULL DEFAULT NOW(),
+    player bigserial,
+    quiz bigserial,
+    FOREIGN KEY (player) REFERENCES players(id) ON DELETE CASCADE,
+    FOREIGN KEY (quiz) REFERENCES quizes(id) ON DELETE CASCADE
+);
