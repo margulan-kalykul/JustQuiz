@@ -44,6 +44,18 @@ func (app *application) routes() http.Handler {
 	// Delete player by id
 	quizes.HandleFunc("/quizes/{id:[0-9]+}", app.requirePermissions("player:write", app.deleteQuizHandler)).Methods("DELETE")
 
+	games := r.PathPrefix("/v1").Subrouter()
+	// Games list
+	games.HandleFunc("/games", app.getGamesList).Methods("GET")
+	// Create a new player
+	games.HandleFunc("/games", app.createGameHandler).Methods("POST")
+	// Get a player by id
+	games.HandleFunc("/games/{id:[0-9]+}", app.getGameHandler).Methods("GET")
+	// Answer question
+	games.HandleFunc("/games/{id:[0-9]+}", app.answerGameHandler).Methods("POST")
+	// Delete player by id
+	games.HandleFunc("/games/{id:[0-9]+}", app.requirePermissions("player:write", app.deleteGameHandler)).Methods("DELETE")
+
 	users := r.PathPrefix("/v1").Subrouter()
 	// User handlers with Authentication
 	users.HandleFunc("/users", app.registerUserHandler).Methods("POST")

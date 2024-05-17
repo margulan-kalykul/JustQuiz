@@ -18,6 +18,7 @@ var (
 type Models struct {
 	Players		PlayerModel
 	Quizes		QuizModel
+	Games		GameModel
 	Users       UserModel
 	Tokens      TokenModel
 	Permissions PermissionModel
@@ -33,6 +34,11 @@ func AllModels(db *sql.DB) Models {
 			ErrorLog: errorLog,
 		},
 		Quizes: QuizModel{
+			DB:       db,
+			InfoLog:  infoLog,
+			ErrorLog: errorLog,
+		},
+		Games: GameModel{
 			DB:       db,
 			InfoLog:  infoLog,
 			ErrorLog: errorLog,
